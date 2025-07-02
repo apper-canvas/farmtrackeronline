@@ -310,7 +310,7 @@ const resetForm = () => {
                     ))}
                   </Select>
                   
-                  <Select
+<Select
                     label="Farm"
                     value={formData.farmId}
                     onChange={(e) => setFormData({ ...formData, farmId: e.target.value })}
@@ -324,11 +324,18 @@ const resetForm = () => {
                     ))}
                   </Select>
                   
+                  <Input
+                    label="Farm Name"
+                    value={formData.farmName}
+                    onChange={(e) => setFormData({ ...formData, farmName: e.target.value })}
+                    placeholder="Enter farm name"
+                  />
+                  
                   <Select
                     label="Related Crop (Optional)"
                     value={formData.cropId}
                     onChange={(e) => setFormData({ ...formData, cropId: e.target.value })}
->
+                  >
                     <option value="">No specific crop</option>
                     {crops.filter(crop => crop.farm_id === parseInt(formData.farmId)).map(crop => (
                       <option key={crop.Id} value={crop.Id}>
@@ -336,6 +343,13 @@ const resetForm = () => {
                       </option>
                     ))}
                   </Select>
+                  
+                  <Input
+                    label="Crop Type"
+                    value={formData.cropType}
+                    onChange={(e) => setFormData({ ...formData, cropType: e.target.value })}
+                    placeholder="Enter crop type"
+                  />
                   
                   <Input
                     label="Due Date"
