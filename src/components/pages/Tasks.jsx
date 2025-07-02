@@ -29,9 +29,11 @@ const Tasks = () => {
   const [viewMode, setViewMode] = useState('list') // 'list' or 'calendar'
   const [filterStatus, setFilterStatus] = useState('all')
   const [currentWeek, setCurrentWeek] = useState(new Date())
-  const [formData, setFormData] = useState({
+const [formData, setFormData] = useState({
     farmId: '',
     cropId: '',
+    farmName: '',
+    cropType: '',
     title: '',
     type: 'other',
     dueDate: '',
@@ -78,14 +80,20 @@ const Tasks = () => {
     return true
   })
   
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault()
     
     try {
+      // Get farm and crop names from selected IDs
+      const selectedFarm = farms.find(f => f.Id === parseInt(formData.farmId))
+      const selectedCrop = crops.find(c => c.Id === parseInt(formData.cropId))
+      
       const taskData = {
         ...formData,
         dueDate: new Date(formData.dueDate).toISOString(),
-        completed: editingTask ? editingTask.completed : false
+        completed: editingTask ? editingTask.completed : false,
+        farm_name: selectedFarm ? selectedFarm.name : '',
+        crop_type: selectedCrop ? selectedCrop.type : ''
       }
       
       if (editingTask) {
@@ -121,6 +129,8 @@ const handleEdit = (task) => {
     setFormData({
       farmId: task.farm_id,
       cropId: task.crop_id || '',
+      farmName: task.farm_name || '',
+      cropType: task.crop_type || '',
       title: task.title,
       type: task.type,
       dueDate: task.due_date.split('T')[0],
@@ -141,10 +151,12 @@ const handleEdit = (task) => {
     }
   }
   
-  const resetForm = () => {
+const resetForm = () => {
     setFormData({
       farmId: '',
       cropId: '',
+      farmName: '',
+      cropType: '',
       title: '',
       type: 'other',
       dueDate: '',
