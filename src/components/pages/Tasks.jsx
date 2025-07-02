@@ -316,9 +316,9 @@ const handleEdit = (task) => {
                     label="Related Crop (Optional)"
                     value={formData.cropId}
                     onChange={(e) => setFormData({ ...formData, cropId: e.target.value })}
-                  >
+>
                     <option value="">No specific crop</option>
-{crops.filter(crop => crop.farm_id === formData.farmId).map(crop => (
+                    {crops.filter(crop => crop.farm_id === parseInt(formData.farmId)).map(crop => (
                       <option key={crop.Id} value={crop.Id}>
                         {crop.type} - {crop.field}
                       </option>
