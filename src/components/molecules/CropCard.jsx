@@ -85,14 +85,33 @@ const CropCard = ({ crop, onEdit, onDelete }) => {
             {isOverdue ? 'Overdue' : daysToHarvest === 0 ? 'Today' : `${daysToHarvest} days`}
           </span>
         </div>
-        
-        {crop.notes && (
-          <div className="pt-3 border-t border-gray-200">
-            <p className="text-sm text-gray-600">{crop.notes}</p>
+{(crop.notes || (crop.images && crop.images.length > 0)) && (
+          <div className="pt-3 border-t border-gray-200 space-y-3">
+            {crop.notes && (
+              <p className="text-sm text-gray-600">{crop.notes}</p>
+            )}
+            
+            {crop.images && crop.images.length > 0 && (
+              <div className="flex space-x-2 overflow-x-auto">
+                {crop.images.slice(0, 3).map((image, index) => (
+                  <div key={index} className="flex-shrink-0">
+                    <img 
+                      src={image.data} 
+                      alt={image.name}
+                      className="w-16 h-16 object-cover rounded border border-gray-200"
+                    />
+                  </div>
+                ))}
+                {crop.images.length > 3 && (
+                  <div className="flex-shrink-0 w-16 h-16 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
+                    <span className="text-xs text-gray-500">+{crop.images.length - 3}</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
-      
       <div className="flex items-center justify-end space-x-2 mt-4 pt-4 border-t border-gray-200">
         <Button
           variant="ghost"

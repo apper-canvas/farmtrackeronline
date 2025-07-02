@@ -53,10 +53,28 @@ const TransactionItem = ({ transaction, onEdit, onDelete }) => {
                 {isIncome ? '+' : '-'}${Math.abs(transaction.amount).toLocaleString()}
               </span>
             </div>
-            
-            <p className="text-sm text-gray-600 mb-2">
+<p className="text-sm text-gray-600 mb-2">
               {transaction.description || 'No description provided'}
             </p>
+            
+            {transaction.images && transaction.images.length > 0 && (
+              <div className="flex space-x-2 mb-2 overflow-x-auto">
+                {transaction.images.slice(0, 3).map((image, index) => (
+                  <div key={index} className="flex-shrink-0">
+                    <img 
+                      src={image.data} 
+                      alt={image.name}
+                      className="w-12 h-12 object-cover rounded border border-gray-200"
+                    />
+                  </div>
+                ))}
+                {transaction.images.length > 3 && (
+                  <div className="flex-shrink-0 w-12 h-12 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
+                    <span className="text-xs text-gray-500">+{transaction.images.length - 3}</span>
+                  </div>
+                )}
+              </div>
+            )}
             
             <div className="flex items-center justify-between text-xs text-gray-500">
               <span>{format(new Date(transaction.date), 'MMM d, yyyy')}</span>

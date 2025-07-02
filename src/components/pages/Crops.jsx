@@ -7,6 +7,7 @@ import Button from '@/components/atoms/Button'
 import Input from '@/components/atoms/Input'
 import Select from '@/components/atoms/Select'
 import Textarea from '@/components/atoms/Textarea'
+import ImageUpload from '@/components/atoms/ImageUpload'
 import Badge from '@/components/atoms/Badge'
 import Loading from '@/components/ui/Loading'
 import Error from '@/components/ui/Error'
@@ -25,14 +26,15 @@ const Crops = () => {
   const [showForm, setShowForm] = useState(false)
   const [editingCrop, setEditingCrop] = useState(null)
   const [statusFilter, setStatusFilter] = useState('all')
-  const [formData, setFormData] = useState({
+const [formData, setFormData] = useState({
     farmId: '',
     type: '',
     field: '',
     plantingDate: '',
     expectedHarvest: '',
     status: 'planted',
-    notes: ''
+    notes: '',
+    images: []
   })
   
   const cropTypes = [
@@ -98,7 +100,7 @@ const Crops = () => {
     }
   }
   
-  const handleEdit = (crop) => {
+const handleEdit = (crop) => {
     setEditingCrop(crop)
     setFormData({
       farmId: crop.farmId,
@@ -107,7 +109,8 @@ const Crops = () => {
       plantingDate: crop.plantingDate.split('T')[0],
       expectedHarvest: crop.expectedHarvest.split('T')[0],
       status: crop.status,
-      notes: crop.notes || ''
+      notes: crop.notes || '',
+      images: crop.images || []
     })
     setShowForm(true)
   }
@@ -124,7 +127,7 @@ const Crops = () => {
     }
   }
   
-  const resetForm = () => {
+const resetForm = () => {
     setFormData({
       farmId: '',
       type: '',
@@ -132,7 +135,8 @@ const Crops = () => {
       plantingDate: '',
       expectedHarvest: '',
       status: 'planted',
-      notes: ''
+      notes: '',
+      images: []
     })
     setEditingCrop(null)
     setShowForm(false)
@@ -281,13 +285,23 @@ const Crops = () => {
                     required
                   />
                   
-                  <div className="md:col-span-2">
+<div className="md:col-span-2">
                     <Textarea
                       label="Notes"
                       value={formData.notes}
                       onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                       placeholder="Any additional notes about this crop..."
                       rows={3}
+                    />
+                  </div>
+                  
+                  <div className="md:col-span-2">
+                    <ImageUpload
+                      label="Crop Photos"
+                      images={formData.images}
+                      onChange={(images) => setFormData({ ...formData, images })}
+                      maxImages={5}
+                      maxSizeKB={2048}
                     />
                   </div>
                   

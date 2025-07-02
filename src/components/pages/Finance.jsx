@@ -9,6 +9,7 @@ import ApperIcon from "@/components/ApperIcon";
 import Select from "@/components/atoms/Select";
 import Textarea from "@/components/atoms/Textarea";
 import Input from "@/components/atoms/Input";
+import ImageUpload from "@/components/atoms/ImageUpload";
 import Button from "@/components/atoms/Button";
 import StatsCard from "@/components/molecules/StatsCard";
 import TransactionItem from "@/components/molecules/TransactionItem";
@@ -41,13 +42,14 @@ const Finance = () => {
     startDate: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
     endDate: format(endOfMonth(new Date()), 'yyyy-MM-dd')
   })
-  const [formData, setFormData] = useState({
+const [formData, setFormData] = useState({
     farmId: '',
     type: 'expense',
     category: '',
     amount: '',
     date: '',
-    description: ''
+    description: '',
+    images: []
   })
   
   const incomeCategories = [
@@ -172,7 +174,7 @@ const periodIncome = transactions
     }
   }
   
-  const handleEdit = (transaction) => {
+const handleEdit = (transaction) => {
     setEditingTransaction(transaction)
     setFormData({
       farmId: transaction.farmId,
@@ -180,7 +182,8 @@ const periodIncome = transactions
       category: transaction.category,
       amount: transaction.amount.toString(),
       date: transaction.date.split('T')[0],
-      description: transaction.description || ''
+      description: transaction.description || '',
+      images: transaction.images || []
     })
     setShowForm(true)
   }
@@ -204,7 +207,8 @@ const resetForm = () => {
       category: '',
       amount: '',
       date: '',
-      description: ''
+      description: '',
+      images: []
     })
     setEditingTransaction(null)
     setShowForm(false)
@@ -582,13 +586,23 @@ const resetForm = () => {
                     ))}
                   </Select>
                   
-                  <div className="md:col-span-2">
+<div className="md:col-span-2">
                     <Textarea
                       label="Description"
                       value={formData.description}
                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                       placeholder="Add details about this transaction..."
                       rows={3}
+                    />
+                  </div>
+                  
+                  <div className="md:col-span-2">
+                    <ImageUpload
+                      label="Attach Receipt Images"
+                      images={formData.images}
+                      onChange={(images) => setFormData({ ...formData, images })}
+                      maxImages={3}
+                      maxSizeKB={2048}
                     />
                   </div>
                   
