@@ -15,17 +15,20 @@ import Empty from '@/components/ui/Empty'
 import ApperIcon from '@/components/ApperIcon'
 import cropService from '@/services/api/cropService'
 import farmService from '@/services/api/farmService'
+import FieldMapVisualization from '@/components/organisms/FieldMapVisualization'
 
 // Set app element for accessibility
 Modal.setAppElement('#root')
 const Crops = () => {
-  const [crops, setCrops] = useState([])
+const [crops, setCrops] = useState([])
   const [farms, setFarms] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [showForm, setShowForm] = useState(false)
   const [editingCrop, setEditingCrop] = useState(null)
   const [statusFilter, setStatusFilter] = useState('all')
+  const [viewMode, setViewMode] = useState('list')
+  const [selectedFarm, setSelectedFarm] = useState(null)
 const [formData, setFormData] = useState({
     farmId: '',
     type: '',
@@ -145,7 +148,7 @@ const resetForm = () => {
   if (loading) return <Loading type="cards" />
   if (error) return <Error message={error} onRetry={loadData} />
   
-  return (
+return (
     <div className="space-y-6">
       {/* Page Header */}
       <div className="flex items-center justify-between">
@@ -153,13 +156,39 @@ const resetForm = () => {
           <h1 className="text-3xl font-bold text-gray-900 font-display">Crops</h1>
           <p className="text-gray-600 mt-1">Track your crop plantings and harvests</p>
         </div>
-        <Button
-          onClick={() => setShowForm(true)}
-          icon="Plus"
-          variant="primary"
-        >
-          Add Crop
-        </Button>
+        <div className="flex items-center space-x-3">
+          <div className="flex items-center bg-gray-100 rounded-lg p-1">
+            <button
+              onClick={() => setViewMode('list')}
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                viewMode === 'list' 
+                  ? 'bg-white text-gray-900 shadow-sm' 
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <ApperIcon name="List" size={16} className="mr-2" />
+              List
+            </button>
+            <button
+              onClick={() => setViewMode('map')}
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                viewMode === 'map' 
+                  ? 'bg-white text-gray-900 shadow-sm' 
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <ApperIcon name="Map" size={16} className="mr-2" />
+              Field Map
+            </button>
+          </div>
+          <Button
+            onClick={() => setShowForm(true)}
+            icon="Plus"
+            variant="primary"
+          >
+            Add Crop
+          </Button>
+        </div>
       </div>
       
       {/* Filters */}
@@ -327,30 +356,44 @@ const resetForm = () => {
           )}
         </AnimatePresence>
       </Modal>
-      
-      {/* Crops Grid */}
-      {filteredCrops.length === 0 ? (
-        <Empty
-          icon="Wheat"
-          title={statusFilter === 'all' ? "No crops yet" : `No ${statusFilter} crops`}
-          message={statusFilter === 'all' 
-            ? "Start tracking your crops by adding your first planting."
-            : `No crops found with status: ${statusFilter}`
-          }
-          action={statusFilter === 'all' ? () => setShowForm(true) : undefined}
-          actionLabel="Add Crop"
-        />
+{/* Content Area */}
+      {viewMode === 'list' ? (
+        /* Crops Grid */
+        filteredCrops.length === 0 ? (
+          <Empty
+            icon="Wheat"
+            title={statusFilter === 'all' ? "No crops yet" : `No ${statusFilter} crops`}
+            message={statusFilter === 'all' 
+              ? "Start tracking your crops by adding your first planting."
+              : `No crops found with status: ${statusFilter}`
+            }
+            action={statusFilter === 'all' ? () => setShowForm(true) : undefined}
+            actionLabel="Add Crop"
+          />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredCrops.map(crop => (
+              <CropCard
+                key={crop.Id}
+                crop={crop}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
+        )
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCrops.map(crop => (
-            <CropCard
-              key={crop.Id}
-              crop={crop}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-          ))}
-        </div>
+        <FieldMapVisualization
+          farms={farms}
+          crops={filteredCrops}
+          selectedFarm={selectedFarm}
+          onFarmSelect={setSelectedFarm}
+          onCropEdit={handleEdit}
+          onCropDelete={handleDelete}
+          onAddCrop={() => setShowForm(true)}
+          cropTypes={cropTypes}
+          statusOptions={statusOptions}
+        />
       )}
     </div>
   )
