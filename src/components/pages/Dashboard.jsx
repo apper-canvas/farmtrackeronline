@@ -13,14 +13,16 @@ import cropService from '@/services/api/cropService'
 import taskService from '@/services/api/taskService'
 import transactionService from '@/services/api/transactionService'
 import weatherService from '@/services/api/weatherService'
+import inventoryService from '@/services/api/inventoryService'
 
 const Dashboard = () => {
-  const [data, setData] = useState({
+const [data, setData] = useState({
     farms: [],
     crops: [],
     tasks: [],
     transactions: [],
-    weather: null
+    weather: null,
+    inventory: []
   })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -30,15 +32,16 @@ const Dashboard = () => {
       setLoading(true)
       setError('')
       
-      const [farms, crops, tasks, transactions, weather] = await Promise.all([
+const [farms, crops, tasks, transactions, weather, inventory] = await Promise.all([
         farmService.getAll(),
         cropService.getAll(),
         taskService.getAll(),
         transactionService.getAll(),
-        weatherService.getCurrentWeather()
+        weatherService.getCurrentWeather(),
+        inventoryService.getAll()
       ])
       
-      setData({ farms, crops, tasks, transactions, weather })
+setData({ farms, crops, tasks, transactions, weather, inventory })
     } catch (err) {
       setError('Failed to load dashboard data')
     } finally {
@@ -60,8 +63,9 @@ const Dashboard = () => {
     .reduce((sum, t) => sum + t.amount, 0)
   const currentMonthExpenses = data.transactions
     .filter(t => t.type === 'expense' && new Date(t.date).getMonth() === new Date().getMonth())
-    .reduce((sum, t) => sum + t.amount, 0)
+.reduce((sum, t) => sum + t.amount, 0)
   const monthlyProfit = currentMonthIncome - currentMonthExpenses
+  const lowStockItems = data.inventory.filter(item => item.currentStock <= item.reorderLevel)
   
   return (
     <div className="space-y-6">
@@ -91,13 +95,25 @@ const Dashboard = () => {
           icon="CheckSquare"
           color="warning"
         />
-        <StatsCard
+<StatsCard
           title="Monthly Profit"
           value={`$${monthlyProfit.toLocaleString()}`}
           icon="DollarSign"
           color={monthlyProfit >= 0 ? 'success' : 'error'}
           trend={monthlyProfit >= 0 ? 'up' : 'down'}
           trendValue={`${monthlyProfit >= 0 ? '+' : ''}${((monthlyProfit / (currentMonthExpenses || 1)) * 100).toFixed(1)}%`}
+        />
+        <StatsCard
+          title="Inventory Items"
+          value={data.inventory.length}
+          icon="Package"
+          color="primary"
+        />
+        <StatsCard
+          title="Low Stock Alerts"
+          value={lowStockItems.length}
+          icon="AlertTriangle"
+          color={lowStockItems.length > 0 ? 'warning' : 'success'}
         />
       </div>
       

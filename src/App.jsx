@@ -7,6 +7,7 @@ import Crops from '@/components/pages/Crops'
 import Tasks from '@/components/pages/Tasks'
 import Finance from '@/components/pages/Finance'
 import Weather from '@/components/pages/Weather'
+import Inventory from '@/components/pages/Inventory'
 
 function App() {
   return (
@@ -18,7 +19,8 @@ function App() {
             <Route path="/farms" element={<Farms />} />
             <Route path="/crops" element={<Crops />} />
             <Route path="/tasks" element={<Tasks />} />
-            <Route path="/finance" element={<Finance />} />
+<Route path="/finance" element={<Finance />} />
+            <Route path="/inventory" element={<Inventory />} />
             <Route path="/weather" element={<Weather />} />
           </Routes>
         </Layout>

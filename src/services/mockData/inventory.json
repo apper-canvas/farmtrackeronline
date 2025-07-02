@@ -1,0 +1,167 @@
+[
+  {
+    "Id": 1,
+    "name": "Corn Seeds - Premium Hybrid",
+    "category": "seeds",
+    "currentStock": 25,
+    "reorderLevel": 20,
+    "unit": "bags",
+    "costPerUnit": 85.50,
+    "supplier": "Greenfield Seeds Co.",
+    "description": "High-yield corn seeds suitable for various soil types"
+  },
+  {
+    "Id": 2,
+    "name": "Wheat Seeds - Winter Variety",
+    "category": "seeds",
+    "currentStock": 15,
+    "reorderLevel": 25,
+    "unit": "bags",
+    "costPerUnit": 72.00,
+    "supplier": "Heritage Seed Supply",
+    "description": "Cold-resistant wheat seeds for winter planting"
+  },
+  {
+    "Id": 3,
+    "name": "NPK Fertilizer 10-10-10",
+    "category": "fertilizers",
+    "currentStock": 8,
+    "reorderLevel": 15,
+    "unit": "bags",
+    "costPerUnit": 35.75,
+    "supplier": "AgriChem Solutions",
+    "description": "Balanced nitrogen, phosphorus, and potassium fertilizer"
+  },
+  {
+    "Id": 4,
+    "name": "Organic Compost",
+    "category": "fertilizers",
+    "currentStock": 45,
+    "reorderLevel": 30,
+    "unit": "cubic yards",
+    "costPerUnit": 28.00,
+    "supplier": "EcoGrow Organics",
+    "description": "Premium organic compost for soil enhancement"
+  },
+  {
+    "Id": 5,
+    "name": "John Deere Tractor - Model X320",
+    "category": "equipment",
+    "currentStock": 2,
+    "reorderLevel": 1,
+    "unit": "units",
+    "costPerUnit": 45000.00,
+    "supplier": "John Deere Dealership",
+    "description": "Mid-size utility tractor for various farm operations"
+  },
+  {
+    "Id": 6,
+    "name": "Irrigation Sprinklers",
+    "category": "equipment",
+    "currentStock": 12,
+    "reorderLevel": 20,
+    "unit": "units",
+    "costPerUnit": 125.50,
+    "supplier": "WaterWorks Equipment",
+    "description": "High-efficiency rotating sprinklers for crop irrigation"
+  },
+  {
+    "Id": 7,
+    "name": "Soybean Seeds - Non-GMO",
+    "category": "seeds",
+    "currentStock": 30,
+    "reorderLevel": 25,
+    "unit": "bags",
+    "costPerUnit": 68.25,
+    "supplier": "Pure Seed Company",
+    "description": "Certified non-GMO soybean seeds with high protein content"
+  },
+  {
+    "Id": 8,
+    "name": "Phosphate Fertilizer",
+    "category": "fertilizers",
+    "currentStock": 5,
+    "reorderLevel": 12,
+    "unit": "bags",
+    "costPerUnit": 42.00,
+    "supplier": "FertiliMax Corp",
+    "description": "High-phosphate fertilizer for root development"
+  },
+  {
+    "Id": 9,
+    "name": "Cultivator - 3-Point Hitch",
+    "category": "equipment",
+    "currentStock": 3,
+    "reorderLevel": 2,
+    "unit": "units",
+    "costPerUnit": 2850.00,
+    "supplier": "Farm Implements Inc.",
+    "description": "Heavy-duty cultivator for soil preparation"
+  },
+  {
+    "Id": 10,
+    "name": "Tomato Seeds - Cherry Variety",
+    "category": "seeds",
+    "currentStock": 18,
+    "reorderLevel": 15,
+    "unit": "packets",
+    "costPerUnit": 12.75,
+    "supplier": "Garden Fresh Seeds",
+    "description": "Sweet cherry tomato seeds for greenhouse cultivation"
+  },
+  {
+    "Id": 11,
+    "name": "Potash Fertilizer",
+    "category": "fertilizers",
+    "currentStock": 22,
+    "reorderLevel": 20,
+    "unit": "bags",
+    "costPerUnit": 38.50,
+    "supplier": "AgriChem Solutions",
+    "description": "Potassium-rich fertilizer for fruit and vegetable crops"
+  },
+  {
+    "Id": 12,
+    "name": "Seed Drill - 15ft Width",
+    "category": "equipment",
+    "currentStock": 1,
+    "reorderLevel": 1,
+    "unit": "units",
+    "costPerUnit": 18500.00,
+    "supplier": "Precision Ag Equipment",
+    "description": "No-till seed drill for precise seed placement"
+  },
+  {
+    "Id": 13,
+    "name": "Alfalfa Seeds - Premium Grade",
+    "category": "seeds",
+    "currentStock": 40,
+    "reorderLevel": 30,
+    "unit": "bags",
+    "costPerUnit": 95.00,
+    "supplier": "Forage Seed Specialists",
+    "description": "High-quality alfalfa seeds for hay production"
+  },
+  {
+    "Id": 14,
+    "name": "Lime Fertilizer",
+    "category": "fertilizers",
+    "currentStock": 35,
+    "reorderLevel": 25,
+    "unit": "tons",
+    "costPerUnit": 45.00,
+    "supplier": "Soil Solutions LLC",
+    "description": "Agricultural lime for soil pH adjustment"
+  },
+  {
+    "Id": 15,
+    "name": "Combine Harvester - Compact",
+    "category": "equipment",
+    "currentStock": 1,
+    "reorderLevel": 1,
+    "unit": "units",
+    "costPerUnit": 125000.00,
+    "supplier": "Harvest Equipment Co.",
+    "description": "Compact combine harvester for small to medium farms"
+  }
+]
