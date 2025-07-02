@@ -1,0 +1,74 @@
+[
+  {
+    "Id": 1,
+    "farmId": "1",
+    "cropId": "1",
+    "title": "Water corn field",
+    "type": "watering",
+    "dueDate": "2024-06-15T09:00:00.000Z",
+    "completed": false,
+    "notes": "Check soil moisture levels first",
+    "farmName": "Green Valley Farm",
+    "cropType": "Corn"
+  },
+  {
+    "Id": 2,
+    "farmId": "1",
+    "cropId": "2",
+    "title": "Harvest cherry tomatoes",
+    "type": "harvesting",
+    "dueDate": "2024-06-14T07:00:00.000Z",
+    "completed": false,
+    "notes": "Pick only fully ripe tomatoes",
+    "farmName": "Green Valley Farm",
+    "cropType": "Tomatoes"
+  },
+  {
+    "Id": 3,
+    "farmId": "2",
+    "cropId": "4",
+    "title": "Fertilize potato field",
+    "type": "fertilizing",
+    "dueDate": "2024-06-16T08:00:00.000Z",
+    "completed": false,
+    "notes": "Use nitrogen-rich fertilizer",
+    "farmName": "Sunny Acres",
+    "cropType": "Potatoes"
+  },
+  {
+    "Id": 4,
+    "farmId": "1",
+    "cropId": "",
+    "title": "Inspect irrigation system",
+    "type": "maintenance",
+    "dueDate": "2024-06-13T10:00:00.000Z",
+    "completed": true,
+    "notes": "Check for leaks and clogs",
+    "farmName": "Green Valley Farm",
+    "cropType": ""
+  },
+  {
+    "Id": 5,
+    "farmId": "3",
+    "cropId": "6",
+    "title": "Weed lettuce greenhouse",
+    "type": "weeding",
+    "dueDate": "2024-06-17T06:00:00.000Z",
+    "completed": false,
+    "notes": "Remove weeds around seedlings",
+    "farmName": "Riverside Ranch",
+    "cropType": "Lettuce"
+  },
+  {
+    "Id": 6,
+    "farmId": "2",
+    "cropId": "5",
+    "title": "Check carrot growth",
+    "type": "inspection",
+    "dueDate": "2024-06-18T11:00:00.000Z",
+    "completed": false,
+    "notes": "Monitor for pest damage",
+    "farmName": "Sunny Acres",
+    "cropType": "Carrots"
+  }
+]

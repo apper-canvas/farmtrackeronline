@@ -1,0 +1,102 @@
+[
+  {
+    "Id": 1,
+    "farmId": "1",
+    "type": "expense",
+    "category": "seeds",
+    "amount": 1250,
+    "date": "2024-06-01T00:00:00.000Z",
+    "description": "Hybrid corn seeds for north field",
+    "farmName": "Green Valley Farm"
+  },
+  {
+    "Id": 2,
+    "farmId": "1",
+    "type": "income",
+    "category": "crop-sales",
+    "amount": 4500,
+    "date": "2024-06-05T00:00:00.000Z",
+    "description": "Wheat harvest sale to local mill",
+    "farmName": "Green Valley Farm"
+  },
+  {
+    "Id": 3,
+    "farmId": "2",
+    "type": "expense",
+    "category": "fertilizers",
+    "amount": 850,
+    "date": "2024-06-03T00:00:00.000Z",
+    "description": "Nitrogen fertilizer for potato field",
+    "farmName": "Sunny Acres"
+  },
+  {
+    "Id": 4,
+    "farmId": "1",
+    "type": "expense",
+    "category": "labor",
+    "amount": 2400,
+    "date": "2024-06-07T00:00:00.000Z",
+    "description": "Seasonal workers for harvest",
+    "farmName": "Green Valley Farm"
+  },
+  {
+    "Id": 5,
+    "farmId": "3",
+    "type": "expense",
+    "category": "equipment",
+    "amount": 3200,
+    "date": "2024-06-02T00:00:00.000Z",
+    "description": "New irrigation sprinklers",
+    "farmName": "Riverside Ranch"
+  },
+  {
+    "Id": 6,
+    "farmId": "2",
+    "type": "income",
+    "category": "crop-sales",
+    "amount": 3100,
+    "date": "2024-06-08T00:00:00.000Z",
+    "description": "Early potato sales to restaurant",
+    "farmName": "Sunny Acres"
+  },
+  {
+    "Id": 7,
+    "farmId": "1",
+    "type": "expense",
+    "category": "fuel",
+    "amount": 650,
+    "date": "2024-06-04T00:00:00.000Z",
+    "description": "Diesel fuel for tractors",
+    "farmName": "Green Valley Farm"
+  },
+  {
+    "Id": 8,
+    "farmId": "3",
+    "type": "expense",
+    "category": "supplies",
+    "amount": 420,
+    "date": "2024-06-06T00:00:00.000Z",
+    "description": "Greenhouse supplies and tools",
+    "farmName": "Riverside Ranch"
+  },
+  {
+    "Id": 9,
+    "farmId": "2",
+    "type": "expense",
+    "category": "maintenance",
+    "amount": 800,
+    "date": "2024-06-09T00:00:00.000Z",
+    "description": "Tractor maintenance and repairs",
+    "farmName": "Sunny Acres"
+  },
+  {
+    "Id": 10,
+    "farmId": "1",
+    "type": "income",
+    "category": "crop-sales",
+    "amount": 2800,
+    "date": "2024-06-10T00:00:00.000Z",
+    "description": "Tomato sales to local market",
+    "farmName": "Green Valley Farm"
+  }
+]

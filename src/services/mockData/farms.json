@@ -1,0 +1,29 @@
+[
+  {
+    "Id": 1,
+    "name": "Green Valley Farm",
+    "location": "Sacramento, CA",
+    "size": 250,
+    "sizeUnit": "acres",
+    "activeCrops": 3,
+    "createdAt": "2024-01-15T00:00:00.000Z"
+  },
+  {
+    "Id": 2,
+    "name": "Sunny Acres",
+    "location": "Fresno, CA",
+    "size": 180,
+    "sizeUnit": "acres",
+    "activeCrops": 2,
+    "createdAt": "2024-02-20T00:00:00.000Z"
+  },
+  {
+    "Id": 3,
+    "name": "Riverside Ranch",
+    "location": "Bakersfield, CA",
+    "size": 320,
+    "sizeUnit": "acres",
+    "activeCrops": 4,
+    "createdAt": "2024-03-10T00:00:00.000Z"
+  }
+]

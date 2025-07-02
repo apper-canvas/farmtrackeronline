@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import 'react-toastify/dist/ReactToastify.css';
+
+@layer base {
+  body {
+    font-family: Inter, sans-serif;
+    @apply bg-background text-gray-800;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: Outfit, sans-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-500 hover:bg-primary-600 text-white font-medium px-4 py-2 rounded-md transition-colors duration-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-white hover:bg-gray-50 text-gray-700 font-medium px-4 py-2 rounded-md border border-gray-300 transition-colors duration-200;
+  }
+  
+  .card {
+    @apply bg-white rounded-lg shadow-card hover:shadow-card-hover transition-shadow duration-200;
+  }
+  
+  .form-input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200;
+  }
+  
+  .form-label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+  }
+}
+
+/* Toast Customization */
+.Toastify__toast-container {
+  z-index: 9999;
+}
+
+.Toastify__toast {
+  font-family: Inter, sans-serif;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.Toastify__toast--success {
+  background-color: #5CB85C;
+}
+
+.Toastify__toast--error {
+  background-color: #D9534F;
+}
+
+.Toastify__toast--warning {
+  background-color: #F0AD4E;
+}
+
+.Toastify__toast--info {
+  background-color: #5BC0DE;
+}
