@@ -1,23 +1,32 @@
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { toast } from 'react-toastify'
-import { format, startOfMonth, endOfMonth, subMonths, addMonths } from 'date-fns'
-import Modal from 'react-modal'
-import TransactionItem from '@/components/molecules/TransactionItem'
-import StatsCard from '@/components/molecules/StatsCard'
-import Button from '@/components/atoms/Button'
-import Input from '@/components/atoms/Input'
-import Select from '@/components/atoms/Select'
-import Textarea from '@/components/atoms/Textarea'
-import Loading from '@/components/ui/Loading'
-import Error from '@/components/ui/Error'
-import Empty from '@/components/ui/Empty'
-import ApperIcon from '@/components/ApperIcon'
-import transactionService from '@/services/api/transactionService'
-import farmService from '@/services/api/farmService'
+import React, { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { toast } from "react-toastify";
+import { addMonths, endOfMonth, format, isWithinInterval, startOfMonth, subMonths } from "date-fns";
+import Modal from "react-modal";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import ApperIcon from "@/components/ApperIcon";
+import Select from "@/components/atoms/Select";
+import Textarea from "@/components/atoms/Textarea";
+import Input from "@/components/atoms/Input";
+import Button from "@/components/atoms/Button";
+import StatsCard from "@/components/molecules/StatsCard";
+import TransactionItem from "@/components/molecules/TransactionItem";
+import Error from "@/components/ui/Error";
+import Empty from "@/components/ui/Empty";
+import Loading from "@/components/ui/Loading";
+import Farms from "@/components/pages/Farms";
+import transactionsData from "@/services/mockData/transactions.json";
+import inventoryData from "@/services/mockData/inventory.json";
+import farmsData from "@/services/mockData/farms.json";
+import tasksData from "@/services/mockData/tasks.json";
+import cropsData from "@/services/mockData/crops.json";
+import farmService from "@/services/api/farmService";
+import transactionService from "@/services/api/transactionService";
 
 // Set app element for accessibility
 Modal.setAppElement('#root')
+
 const Finance = () => {
   const [transactions, setTransactions] = useState([])
   const [farms, setFarms] = useState([])
@@ -27,6 +36,11 @@ const Finance = () => {
   const [editingTransaction, setEditingTransaction] = useState(null)
   const [activeTab, setActiveTab] = useState('all')
   const [currentMonth, setCurrentMonth] = useState(new Date())
+  const [showDateRange, setShowDateRange] = useState(false)
+  const [dateRange, setDateRange] = useState({
+    startDate: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
+    endDate: format(endOfMonth(new Date()), 'yyyy-MM-dd')
+  })
   const [formData, setFormData] = useState({
     farmId: '',
     type: 'expense',
@@ -76,36 +90,59 @@ const Finance = () => {
     loadData()
   }, [])
   
-  const filteredTransactions = transactions.filter(transaction => {
+const filteredTransactions = transactions.filter(transaction => {
     const transactionDate = new Date(transaction.date)
-    const monthStart = startOfMonth(currentMonth)
-    const monthEnd = endOfMonth(currentMonth)
-    const isInCurrentMonth = transactionDate >= monthStart && transactionDate <= monthEnd
+    let isInDateRange
     
-    if (activeTab === 'income') return transaction.type === 'income' && isInCurrentMonth
-    if (activeTab === 'expenses') return transaction.type === 'expense' && isInCurrentMonth
-    return isInCurrentMonth
+    if (showDateRange) {
+      const start = new Date(dateRange.startDate)
+      const end = new Date(dateRange.endDate)
+      end.setHours(23, 59, 59, 999) // Include full end date
+      isInDateRange = isWithinInterval(transactionDate, { start, end })
+    } else {
+      const monthStart = startOfMonth(currentMonth)
+      const monthEnd = endOfMonth(currentMonth)
+      isInDateRange = transactionDate >= monthStart && transactionDate <= monthEnd
+    }
+    
+    if (activeTab === 'income') return transaction.type === 'income' && isInDateRange
+    if (activeTab === 'expenses') return transaction.type === 'expense' && isInDateRange
+    return isInDateRange
   }).sort((a, b) => new Date(b.date) - new Date(a.date))
   
-  const monthlyIncome = transactions
+const periodIncome = transactions
     .filter(t => {
       const date = new Date(t.date)
-      return t.type === 'income' && 
-             date >= startOfMonth(currentMonth) && 
-             date <= endOfMonth(currentMonth)
+      if (showDateRange) {
+        const start = new Date(dateRange.startDate)
+        const end = new Date(dateRange.endDate)
+        end.setHours(23, 59, 59, 999)
+        return t.type === 'income' && isWithinInterval(date, { start, end })
+      } else {
+        return t.type === 'income' && 
+               date >= startOfMonth(currentMonth) && 
+               date <= endOfMonth(currentMonth)
+      }
     })
     .reduce((sum, t) => sum + t.amount, 0)
   
-  const monthlyExpenses = transactions
+  const periodExpenses = transactions
     .filter(t => {
       const date = new Date(t.date)
-      return t.type === 'expense' && 
-             date >= startOfMonth(currentMonth) && 
-             date <= endOfMonth(currentMonth)
+      if (showDateRange) {
+        const start = new Date(dateRange.startDate)
+        const end = new Date(dateRange.endDate)
+        end.setHours(23, 59, 59, 999)
+        return t.type === 'expense' && isWithinInterval(date, { start, end })
+      } else {
+        return t.type === 'expense' && 
+               date >= startOfMonth(currentMonth) && 
+               date <= endOfMonth(currentMonth)
+      }
     })
     .reduce((sum, t) => sum + t.amount, 0)
   
-  const monthlyProfit = monthlyIncome - monthlyExpenses
+  const periodProfit = periodIncome - periodExpenses
   
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -160,7 +197,7 @@ const Finance = () => {
     }
   }
   
-  const resetForm = () => {
+const resetForm = () => {
     setFormData({
       farmId: '',
       type: 'expense',
@@ -172,77 +209,263 @@ const Finance = () => {
     setEditingTransaction(null)
     setShowForm(false)
   }
-  
+
+  const exportToCSV = () => {
+    try {
+      const csvData = filteredTransactions.map(transaction => {
+        const farm = farms.find(f => f.Id === transaction.farmId)
+        return {
+          Date: format(new Date(transaction.date), 'yyyy-MM-dd'),
+          Type: transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1),
+          Category: transaction.category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+          Amount: transaction.amount,
+          Farm: farm ? `${farm.name} - ${farm.location}` : 'All Farms',
+          Description: transaction.description || ''
+        }
+      })
+
+      const headers = Object.keys(csvData[0] || {})
+      const csvContent = [
+        headers.join(','),
+        ...csvData.map(row => headers.map(header => `"${row[header]}"`).join(','))
+      ].join('\n')
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+      const link = document.createElement('a')
+      const url = URL.createObjectURL(blob)
+      link.setAttribute('href', url)
+      link.setAttribute('download', `financial-report-${format(new Date(), 'yyyy-MM-dd')}.csv`)
+      link.style.visibility = 'hidden'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      
+      toast.success('CSV report exported successfully!')
+    } catch (err) {
+      toast.error('Failed to export CSV report')
+    }
+  }
+
+  const exportToPDF = () => {
+    try {
+      const doc = new jsPDF()
+      
+      // Add title
+      doc.setFontSize(20)
+      doc.text('Financial Report', 20, 20)
+      
+      // Add date range
+      const dateRangeText = showDateRange 
+        ? `${format(new Date(dateRange.startDate), 'dd/MM/yyyy')} - ${format(new Date(dateRange.endDate), 'dd/MM/yyyy')}`
+        : format(currentMonth, 'MMMM yyyy')
+      
+      doc.setFontSize(12)
+      doc.text(`Period: ${dateRangeText}`, 20, 30)
+      
+      // Add summary
+      doc.text(`Total Income: $${periodIncome.toLocaleString()}`, 20, 40)
+      doc.text(`Total Expenses: $${periodExpenses.toLocaleString()}`, 20, 50)
+      doc.text(`Net Profit: $${periodProfit.toLocaleString()}`, 20, 60)
+      
+      // Add transactions table
+      const tableData = filteredTransactions.map(transaction => {
+        const farm = farms.find(f => f.Id === transaction.farmId)
+        return [
+          format(new Date(transaction.date), 'dd/MM/yyyy'),
+          transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1),
+          transaction.category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+          `$${transaction.amount.toLocaleString()}`,
+          farm ? `${farm.name}` : 'All Farms',
+          transaction.description || ''
+        ]
+      })
+
+      doc.autoTable({
+        head: [['Date', 'Type', 'Category', 'Amount', 'Farm', 'Description']],
+        body: tableData,
+        startY: 70,
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [43, 122, 11] },
+        columnStyles: {
+          3: { halign: 'right' },
+          5: { cellWidth: 30 }
+        }
+      })
+      
+      doc.save(`financial-report-${format(new Date(), 'yyyy-MM-dd')}.pdf`)
+      toast.success('PDF report exported successfully!')
+    } catch (err) {
+      toast.error('Failed to export PDF report')
+    }
+  }
+
+  const handleDateRangeChange = (field, value) => {
+    setDateRange(prev => ({ ...prev, [field]: value }))
+  }
+
+  const applyDateRange = () => {
+    if (new Date(dateRange.startDate) > new Date(dateRange.endDate)) {
+      toast.error('Start date cannot be after end date')
+      return
+    }
+    setShowDateRange(true)
+  }
+
+  const clearDateRange = () => {
+    setShowDateRange(false)
+    setDateRange({
+      startDate: format(startOfMonth(currentMonth), 'yyyy-MM-dd'),
+      endDate: format(endOfMonth(currentMonth), 'yyyy-MM-dd')
+    })
+}
+
   if (loading) return <Loading type="table" />
   if (error) return <Error message={error} onRetry={loadData} />
   
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 font-display">Finance</h1>
           <p className="text-gray-600 mt-1">Track your farm income and expenses</p>
         </div>
-        <Button
-          onClick={() => setShowForm(true)}
-          icon="Plus"
-          variant="primary"
-        >
-          Add Transaction
-        </Button>
-      </div>
-      
-      {/* Month Navigation */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
+        <div className="flex flex-wrap items-center gap-3">
           <Button
-            onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-            variant="ghost"
+            onClick={exportToCSV}
+            icon="Download"
+            variant="secondary"
             size="sm"
-            icon="ChevronLeft"
-          />
-          <h2 className="text-xl font-semibold text-gray-900 font-display">
-            {format(currentMonth, 'MMMM yyyy')}
-          </h2>
+            disabled={filteredTransactions.length === 0}
+          >
+            Export CSV
+          </Button>
           <Button
-            onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-            variant="ghost"
+            onClick={exportToPDF}
+            icon="FileText"
+            variant="secondary"
             size="sm"
-            icon="ChevronRight"
-          />
+            disabled={filteredTransactions.length === 0}
+          >
+            Export PDF
+          </Button>
+          <Button
+            onClick={() => setShowForm(true)}
+            icon="Plus"
+            variant="primary"
+          >
+            Add Transaction
+          </Button>
         </div>
-        
-        <Button
-          onClick={() => setCurrentMonth(new Date())}
-          variant="ghost"
-          size="sm"
-        >
-          Current Month
-        </Button>
-      </div>
+</div>
+
+      {/* Date Range Controls */}
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+          <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+            <div className="flex items-center space-x-2">
+              <input
+                type="radio"
+                id="monthly"
+                name="dateMode"
+                checked={!showDateRange}
+                onChange={() => clearDateRange()}
+                className="w-4 h-4 text-primary-600 focus:ring-primary-500"
+              />
+              <label htmlFor="monthly" className="text-sm font-medium text-gray-700">
+                Monthly View
+              </label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <input
+                type="radio"
+                id="custom"
+                name="dateMode"
+                checked={showDateRange}
+                onChange={() => setShowDateRange(true)}
+                className="w-4 h-4 text-primary-600 focus:ring-primary-500"
+              />
+              <label htmlFor="custom" className="text-sm font-medium text-gray-700">
+                Custom Range
+              </label>
+            </div>
+          </div>
+          
+          {showDateRange ? (
+            <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+              <div className="flex items-center space-x-2">
+                <Input
+                  type="date"
+                  value={dateRange.startDate}
+                  onChange={(e) => handleDateRangeChange('startDate', e.target.value)}
+                  className="text-sm"
+                />
+                <span className="text-gray-500">to</span>
+                <Input
+                  type="date"
+                  value={dateRange.endDate}
+                  onChange={(e) => handleDateRangeChange('endDate', e.target.value)}
+                  className="text-sm"
+                />
+              </div>
+              <Button
+                onClick={applyDateRange}
+                variant="primary"
+                size="sm"
+              >
+                Apply Range
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center space-x-4">
+              <Button
+                onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+                variant="ghost"
+                size="sm"
+                icon="ChevronLeft"
+              />
+              <h2 className="text-xl font-semibold text-gray-900 font-display min-w-[180px] text-center">
+                {format(currentMonth, 'MMMM yyyy')}
+              </h2>
+              <Button
+                onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+                variant="ghost"
+                size="sm"
+                icon="ChevronRight"
+              />
+              <Button
+                onClick={() => setCurrentMonth(new Date())}
+                variant="ghost"
+                size="sm"
+              >
+                Today
+              </Button>
+            </div>
+          )}
+        </div>
+</div>
       
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <StatsCard
-          title="Monthly Income"
-          value={`$${monthlyIncome.toLocaleString()}`}
+          title={showDateRange ? "Period Income" : "Monthly Income"}
+          value={`$${periodIncome.toLocaleString()}`}
           icon="TrendingUp"
           color="success"
         />
         <StatsCard
-          title="Monthly Expenses"
-          value={`$${monthlyExpenses.toLocaleString()}`}
+          title={showDateRange ? "Period Expenses" : "Monthly Expenses"}
+          value={`$${periodExpenses.toLocaleString()}`}
           icon="TrendingDown"
           color="error"
         />
         <StatsCard
           title="Net Profit"
-          value={`$${monthlyProfit.toLocaleString()}`}
+          value={`$${periodProfit.toLocaleString()}`}
           icon="DollarSign"
-          color={monthlyProfit >= 0 ? 'success' : 'error'}
-          trend={monthlyProfit >= 0 ? 'up' : 'down'}
-          trendValue={`${monthlyProfit >= 0 ? '+' : ''}${((monthlyProfit / (monthlyExpenses || 1)) * 100).toFixed(1)}%`}
+          color={periodProfit >= 0 ? 'success' : 'error'}
+          trend={periodProfit >= 0 ? 'up' : 'down'}
+          trendValue={`${periodProfit >= 0 ? '+' : ''}${((periodProfit / (periodExpenses || 1)) * 100).toFixed(1)}%`}
         />
         <StatsCard
           title="Transactions"
@@ -271,9 +494,9 @@ const Finance = () => {
             {tab.label} ({tab.count})
           </button>
         ))}
-      </div>
+</div>
       
-{/* Add/Edit Transaction Form Modal */}
+      {/* Add/Edit Transaction Form Modal */}
       <Modal
         isOpen={showForm}
         onRequestClose={resetForm}
@@ -393,11 +616,15 @@ const Finance = () => {
       </Modal>
       
       {/* Transactions List */}
-      {filteredTransactions.length === 0 ? (
+{filteredTransactions.length === 0 ? (
         <Empty
           icon="Receipt"
           title="No transactions found"
-          message={`No ${activeTab === 'all' ? '' : activeTab} transactions found for ${format(currentMonth, 'MMMM yyyy')}.`}
+          message={`No ${activeTab === 'all' ? '' : activeTab} transactions found for ${
+            showDateRange 
+              ? `${format(new Date(dateRange.startDate), 'dd/MM/yyyy')} - ${format(new Date(dateRange.endDate), 'dd/MM/yyyy')}`
+              : format(currentMonth, 'MMMM yyyy')
+          }.`}
           action={() => setShowForm(true)}
           actionLabel="Add Transaction"
         />
