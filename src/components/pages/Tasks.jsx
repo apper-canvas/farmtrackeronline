@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'react-toastify'
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay } from 'date-fns'
+import Modal from 'react-modal'
 import TaskItem from '@/components/molecules/TaskItem'
 import Button from '@/components/atoms/Button'
 import Input from '@/components/atoms/Input'
@@ -15,6 +16,8 @@ import taskService from '@/services/api/taskService'
 import farmService from '@/services/api/farmService'
 import cropService from '@/services/api/cropService'
 
+// Set app element for accessibility
+Modal.setAppElement('#root')
 const Tasks = () => {
   const [tasks, setTasks] = useState([])
   const [farms, setFarms] = useState([])
@@ -244,114 +247,124 @@ const Tasks = () => {
         )}
       </div>
       
-      {/* Add/Edit Task Form */}
-      <AnimatePresence>
-        {showForm && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="card p-6"
-          >
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 font-display">
-                {editingTask ? 'Edit Task' : 'Add New Task'}
-              </h3>
-              <Button
-                onClick={resetForm}
-                variant="ghost"
-                size="sm"
-                icon="X"
-              />
-            </div>
-            
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Input
-                label="Task Title"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                required
-                placeholder="e.g., Water tomatoes in greenhouse"
-              />
-              
-              <Select
-                label="Task Type"
-                value={formData.type}
-                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                required
-              >
-                {taskTypes.map(type => (
-                  <option key={type.value} value={type.value}>
-                    {type.label}
-                  </option>
-                ))}
-              </Select>
-              
-              <Select
-                label="Farm"
-                value={formData.farmId}
-                onChange={(e) => setFormData({ ...formData, farmId: e.target.value })}
-                required
-              >
-                <option value="">Select a farm</option>
-                {farms.map(farm => (
-                  <option key={farm.Id} value={farm.Id}>
-                    {farm.name} - {farm.location}
-                  </option>
-                ))}
-              </Select>
-              
-              <Select
-                label="Related Crop (Optional)"
-                value={formData.cropId}
-                onChange={(e) => setFormData({ ...formData, cropId: e.target.value })}
-              >
-                <option value="">No specific crop</option>
-                {crops.filter(crop => crop.farmId === formData.farmId).map(crop => (
-                  <option key={crop.Id} value={crop.Id}>
-                    {crop.type} - {crop.field}
-                  </option>
-                ))}
-              </Select>
-              
-              <Input
-                label="Due Date"
-                type="date"
-                value={formData.dueDate}
-                onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-                required
-              />
-              
-              <div className="md:col-span-2">
-                <Textarea
-                  label="Notes"
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  placeholder="Any additional details about this task..."
-                  rows={3}
-                />
+{/* Add/Edit Task Form Modal */}
+      <Modal
+        isOpen={showForm}
+        onRequestClose={resetForm}
+        className="modal-content"
+        overlayClassName="modal-overlay"
+        closeTimeoutMS={200}
+      >
+        <AnimatePresence>
+          {showForm && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-auto"
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 font-display">
+                    {editingTask ? 'Edit Task' : 'Add New Task'}
+                  </h3>
+                  <Button
+                    onClick={resetForm}
+                    variant="ghost"
+                    size="sm"
+                    icon="X"
+                  />
+                </div>
+                
+                <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Input
+                    label="Task Title"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    required
+                    placeholder="e.g., Water tomatoes in greenhouse"
+                  />
+                  
+                  <Select
+                    label="Task Type"
+                    value={formData.type}
+                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                    required
+                  >
+                    {taskTypes.map(type => (
+                      <option key={type.value} value={type.value}>
+                        {type.label}
+                      </option>
+                    ))}
+                  </Select>
+                  
+                  <Select
+                    label="Farm"
+                    value={formData.farmId}
+                    onChange={(e) => setFormData({ ...formData, farmId: e.target.value })}
+                    required
+                  >
+                    <option value="">Select a farm</option>
+                    {farms.map(farm => (
+                      <option key={farm.Id} value={farm.Id}>
+                        {farm.name} - {farm.location}
+                      </option>
+                    ))}
+                  </Select>
+                  
+                  <Select
+                    label="Related Crop (Optional)"
+                    value={formData.cropId}
+                    onChange={(e) => setFormData({ ...formData, cropId: e.target.value })}
+                  >
+                    <option value="">No specific crop</option>
+                    {crops.filter(crop => crop.farmId === formData.farmId).map(crop => (
+                      <option key={crop.Id} value={crop.Id}>
+                        {crop.type} - {crop.field}
+                      </option>
+                    ))}
+                  </Select>
+                  
+                  <Input
+                    label="Due Date"
+                    type="date"
+                    value={formData.dueDate}
+                    onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+                    required
+                  />
+                  
+                  <div className="md:col-span-2">
+                    <Textarea
+                      label="Notes"
+                      value={formData.notes}
+                      onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                      placeholder="Any additional details about this task..."
+                      rows={3}
+                    />
+                  </div>
+                  
+                  <div className="md:col-span-2 flex items-center justify-end space-x-4">
+                    <Button
+                      type="button"
+                      onClick={resetForm}
+                      variant="secondary"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      icon={editingTask ? 'Save' : 'Plus'}
+                    >
+                      {editingTask ? 'Update Task' : 'Add Task'}
+                    </Button>
+                  </div>
+                </form>
               </div>
-              
-              <div className="md:col-span-2 flex items-center justify-end space-x-4">
-                <Button
-                  type="button"
-                  onClick={resetForm}
-                  variant="secondary"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  icon={editingTask ? 'Save' : 'Plus'}
-                >
-                  {editingTask ? 'Update Task' : 'Add Task'}
-                </Button>
-              </div>
-            </form>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </Modal>
       
       {/* Tasks Display */}
       {filteredTasks.length === 0 ? (

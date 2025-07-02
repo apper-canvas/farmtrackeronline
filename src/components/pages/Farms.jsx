@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'react-toastify'
+import Modal from 'react-modal'
 import FarmCard from '@/components/molecules/FarmCard'
 import Button from '@/components/atoms/Button'
 import Input from '@/components/atoms/Input'
@@ -11,6 +12,8 @@ import Empty from '@/components/ui/Empty'
 import ApperIcon from '@/components/ApperIcon'
 import farmService from '@/services/api/farmService'
 
+// Set app element for accessibility
+Modal.setAppElement('#root')
 const Farms = () => {
   const [farms, setFarms] = useState([])
   const [loading, setLoading] = useState(true)
@@ -116,87 +119,97 @@ const Farms = () => {
         </Button>
       </div>
       
-      {/* Add/Edit Farm Form */}
-      <AnimatePresence>
-        {showForm && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="card p-6"
-          >
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 font-display">
-                {editingFarm ? 'Edit Farm' : 'Add New Farm'}
-              </h3>
-              <Button
-                onClick={resetForm}
-                variant="ghost"
-                size="sm"
-                icon="X"
-              />
-            </div>
-            
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Input
-                label="Farm Name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                required
-                placeholder="Enter farm name"
-              />
-              
-              <Input
-                label="Location"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                required
-                placeholder="City, State"
-              />
-              
-              <Input
-                label="Size"
-                type="number"
-                value={formData.size}
-                onChange={(e) => setFormData({ ...formData, size: e.target.value })}
-                required
-                placeholder="Enter size"
-                min="0"
-                step="0.1"
-              />
-              
-              <Select
-                label="Size Unit"
-                value={formData.sizeUnit}
-                onChange={(e) => setFormData({ ...formData, sizeUnit: e.target.value })}
-                required
-              >
-                <option value="acres">Acres</option>
-                <option value="hectares">Hectares</option>
-                <option value="square-feet">Square Feet</option>
-                <option value="square-meters">Square Meters</option>
-              </Select>
-              
-              <div className="md:col-span-2 flex items-center justify-end space-x-4">
-                <Button
-                  type="button"
-                  onClick={resetForm}
-                  variant="secondary"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  icon={editingFarm ? 'Save' : 'Plus'}
-                >
-                  {editingFarm ? 'Update Farm' : 'Add Farm'}
-                </Button>
+{/* Add/Edit Farm Form Modal */}
+      <Modal
+        isOpen={showForm}
+        onRequestClose={resetForm}
+        className="modal-content"
+        overlayClassName="modal-overlay"
+        closeTimeoutMS={200}
+      >
+        <AnimatePresence>
+          {showForm && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-auto"
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 font-display">
+                    {editingFarm ? 'Edit Farm' : 'Add New Farm'}
+                  </h3>
+                  <Button
+                    onClick={resetForm}
+                    variant="ghost"
+                    size="sm"
+                    icon="X"
+                  />
+                </div>
+                
+                <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Input
+                    label="Farm Name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    required
+                    placeholder="Enter farm name"
+                  />
+                  
+                  <Input
+                    label="Location"
+                    value={formData.location}
+                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                    required
+                    placeholder="City, State"
+                  />
+                  
+                  <Input
+                    label="Size"
+                    type="number"
+                    value={formData.size}
+                    onChange={(e) => setFormData({ ...formData, size: e.target.value })}
+                    required
+                    placeholder="Enter size"
+                    min="0"
+                    step="0.1"
+                  />
+                  
+                  <Select
+                    label="Size Unit"
+                    value={formData.sizeUnit}
+                    onChange={(e) => setFormData({ ...formData, sizeUnit: e.target.value })}
+                    required
+                  >
+                    <option value="acres">Acres</option>
+                    <option value="hectares">Hectares</option>
+                    <option value="square-feet">Square Feet</option>
+                    <option value="square-meters">Square Meters</option>
+                  </Select>
+                  
+                  <div className="md:col-span-2 flex items-center justify-end space-x-4">
+                    <Button
+                      type="button"
+                      onClick={resetForm}
+                      variant="secondary"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      icon={editingFarm ? 'Save' : 'Plus'}
+                    >
+                      {editingFarm ? 'Update Farm' : 'Add Farm'}
+                    </Button>
+                  </div>
+                </form>
               </div>
-            </form>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </Modal>
       
       {/* Farms Grid */}
       {farms.length === 0 ? (

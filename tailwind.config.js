@@ -30,15 +30,18 @@ export default {
         error: '#D9534F',
         info: '#5BC0DE'
       },
-      fontFamily: {
+fontFamily: {
         display: ['Outfit', 'sans-serif'],
         body: ['Inter', 'sans-serif']
       },
       boxShadow: {
         card: '0 4px 8px rgba(0, 0, 0, 0.1)',
         'card-hover': '0 6px 16px rgba(0, 0, 0, 0.15)'
+      },
+      zIndex: {
+        modal: '9999'
       }
-    },
+    }
   },
-  plugins: [],
+  plugins: []
 }

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'react-toastify'
 import { format, startOfMonth, endOfMonth, subMonths, addMonths } from 'date-fns'
+import Modal from 'react-modal'
 import TransactionItem from '@/components/molecules/TransactionItem'
 import StatsCard from '@/components/molecules/StatsCard'
 import Button from '@/components/atoms/Button'
@@ -15,6 +16,8 @@ import ApperIcon from '@/components/ApperIcon'
 import transactionService from '@/services/api/transactionService'
 import farmService from '@/services/api/farmService'
 
+// Set app element for accessibility
+Modal.setAppElement('#root')
 const Finance = () => {
   const [transactions, setTransactions] = useState([])
   const [farms, setFarms] = useState([])
@@ -270,114 +273,124 @@ const Finance = () => {
         ))}
       </div>
       
-      {/* Add/Edit Transaction Form */}
-      <AnimatePresence>
-        {showForm && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="card p-6"
-          >
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 font-display">
-                {editingTransaction ? 'Edit Transaction' : 'Add New Transaction'}
-              </h3>
-              <Button
-                onClick={resetForm}
-                variant="ghost"
-                size="sm"
-                icon="X"
-              />
-            </div>
-            
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Select
-                label="Type"
-                value={formData.type}
-                onChange={(e) => setFormData({ ...formData, type: e.target.value, category: '' })}
-                required
-              >
-                <option value="income">Income</option>
-                <option value="expense">Expense</option>
-              </Select>
-              
-              <Select
-                label="Category"
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                required
-              >
-                <option value="">Select category</option>
-                {(formData.type === 'income' ? incomeCategories : expenseCategories).map(category => (
-                  <option key={category} value={category}>
-                    {category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                  </option>
-                ))}
-              </Select>
-              
-              <Input
-                label="Amount"
-                type="number"
-                value={formData.amount}
-                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                required
-                placeholder="0.00"
-                min="0"
-                step="0.01"
-              />
-              
-              <Input
-                label="Date"
-                type="date"
-                value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                required
-              />
-              
-              <Select
-                label="Farm (Optional)"
-                value={formData.farmId}
-                onChange={(e) => setFormData({ ...formData, farmId: e.target.value })}
-              >
-                <option value="">All Farms</option>
-                {farms.map(farm => (
-                  <option key={farm.Id} value={farm.Id}>
-                    {farm.name} - {farm.location}
-                  </option>
-                ))}
-              </Select>
-              
-              <div className="md:col-span-2">
-                <Textarea
-                  label="Description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Add details about this transaction..."
-                  rows={3}
-                />
+{/* Add/Edit Transaction Form Modal */}
+      <Modal
+        isOpen={showForm}
+        onRequestClose={resetForm}
+        className="modal-content"
+        overlayClassName="modal-overlay"
+        closeTimeoutMS={200}
+      >
+        <AnimatePresence>
+          {showForm && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-auto"
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 font-display">
+                    {editingTransaction ? 'Edit Transaction' : 'Add New Transaction'}
+                  </h3>
+                  <Button
+                    onClick={resetForm}
+                    variant="ghost"
+                    size="sm"
+                    icon="X"
+                  />
+                </div>
+                
+                <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Select
+                    label="Type"
+                    value={formData.type}
+                    onChange={(e) => setFormData({ ...formData, type: e.target.value, category: '' })}
+                    required
+                  >
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                  </Select>
+                  
+                  <Select
+                    label="Category"
+                    value={formData.category}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    required
+                  >
+                    <option value="">Select category</option>
+                    {(formData.type === 'income' ? incomeCategories : expenseCategories).map(category => (
+                      <option key={category} value={category}>
+                        {category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                      </option>
+                    ))}
+                  </Select>
+                  
+                  <Input
+                    label="Amount"
+                    type="number"
+                    value={formData.amount}
+                    onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                    required
+                    placeholder="0.00"
+                    min="0"
+                    step="0.01"
+                  />
+                  
+                  <Input
+                    label="Date"
+                    type="date"
+                    value={formData.date}
+                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                    required
+                  />
+                  
+                  <Select
+                    label="Farm (Optional)"
+                    value={formData.farmId}
+                    onChange={(e) => setFormData({ ...formData, farmId: e.target.value })}
+                  >
+                    <option value="">All Farms</option>
+                    {farms.map(farm => (
+                      <option key={farm.Id} value={farm.Id}>
+                        {farm.name} - {farm.location}
+                      </option>
+                    ))}
+                  </Select>
+                  
+                  <div className="md:col-span-2">
+                    <Textarea
+                      label="Description"
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      placeholder="Add details about this transaction..."
+                      rows={3}
+                    />
+                  </div>
+                  
+                  <div className="md:col-span-2 flex items-center justify-end space-x-4">
+                    <Button
+                      type="button"
+                      onClick={resetForm}
+                      variant="secondary"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      icon={editingTransaction ? 'Save' : 'Plus'}
+                    >
+                      {editingTransaction ? 'Update Transaction' : 'Add Transaction'}
+                    </Button>
+                  </div>
+                </form>
               </div>
-              
-              <div className="md:col-span-2 flex items-center justify-end space-x-4">
-                <Button
-                  type="button"
-                  onClick={resetForm}
-                  variant="secondary"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  icon={editingTransaction ? 'Save' : 'Plus'}
-                >
-                  {editingTransaction ? 'Update Transaction' : 'Add Transaction'}
-                </Button>
-              </div>
-            </form>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </Modal>
       
       {/* Transactions List */}
       {filteredTransactions.length === 0 ? (
