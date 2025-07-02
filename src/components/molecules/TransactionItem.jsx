@@ -77,8 +77,8 @@ const TransactionItem = ({ transaction, onEdit, onDelete }) => {
             )}
             
             <div className="flex items-center justify-between text-xs text-gray-500">
-              <span>{format(new Date(transaction.date), 'MMM d, yyyy')}</span>
-              <span>{transaction.farmName || 'All Farms'}</span>
+<span>{format(new Date(transaction.date), 'MMM d, yyyy')}</span>
+              <span>{transaction.farm_name || 'All Farms'}</span>
             </div>
           </div>
         </div>

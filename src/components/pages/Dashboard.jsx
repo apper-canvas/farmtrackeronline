@@ -65,7 +65,7 @@ setData({ farms, crops, tasks, transactions, weather, inventory })
     .filter(t => t.type === 'expense' && new Date(t.date).getMonth() === new Date().getMonth())
 .reduce((sum, t) => sum + t.amount, 0)
   const monthlyProfit = currentMonthIncome - currentMonthExpenses
-  const lowStockItems = data.inventory.filter(item => item.currentStock <= item.reorderLevel)
+const lowStockItems = data.inventory.filter(item => item.current_stock <= item.reorder_level)
   
   return (
     <div className="space-y-6">

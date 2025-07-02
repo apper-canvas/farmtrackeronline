@@ -70,13 +70,13 @@ const Farms = () => {
     }
   }
   
-  const handleEdit = (farm) => {
+const handleEdit = (farm) => {
     setEditingFarm(farm)
     setFormData({
-      name: farm.name,
+      name: farm.Name,
       location: farm.location,
       size: farm.size.toString(),
-      sizeUnit: farm.sizeUnit
+      sizeUnit: farm.size_unit
     })
     setShowForm(true)
   }

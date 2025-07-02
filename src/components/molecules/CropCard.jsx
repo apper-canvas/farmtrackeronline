@@ -5,7 +5,7 @@ import Badge from '@/components/atoms/Badge'
 import Button from '@/components/atoms/Button'
 
 const CropCard = ({ crop, onEdit, onDelete }) => {
-  const daysToHarvest = differenceInDays(new Date(crop.expectedHarvest), new Date())
+const daysToHarvest = differenceInDays(new Date(crop.expected_harvest), new Date())
   const isReadyToHarvest = daysToHarvest <= 7 && daysToHarvest >= 0
   const isOverdue = daysToHarvest < 0
   
@@ -68,14 +68,14 @@ const CropCard = ({ crop, onEdit, onDelete }) => {
       
       <div className="space-y-3">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-600">Planted:</span>
-          <span className="font-medium">{format(new Date(crop.plantingDate), 'MMM d, yyyy')}</span>
+<span className="text-gray-600">Planted:</span>
+          <span className="font-medium">{format(new Date(crop.planting_date), 'MMM d, yyyy')}</span>
         </div>
         
         <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-600">Expected Harvest:</span>
+<span className="text-gray-600">Expected Harvest:</span>
           <span className={`font-medium ${isOverdue ? 'text-error' : isReadyToHarvest ? 'text-warning' : ''}`}>
-            {format(new Date(crop.expectedHarvest), 'MMM d, yyyy')}
+            {format(new Date(crop.expected_harvest), 'MMM d, yyyy')}
           </span>
         </div>
         

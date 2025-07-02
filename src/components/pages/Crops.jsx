@@ -106,11 +106,11 @@ const [formData, setFormData] = useState({
 const handleEdit = (crop) => {
     setEditingCrop(crop)
     setFormData({
-      farmId: crop.farmId,
+      farmId: crop.farm_id,
       type: crop.type,
       field: crop.field,
-      plantingDate: crop.plantingDate.split('T')[0],
-      expectedHarvest: crop.expectedHarvest.split('T')[0],
+      plantingDate: crop.planting_date.split('T')[0],
+      expectedHarvest: crop.expected_harvest.split('T')[0],
       status: crop.status,
       notes: crop.notes || '',
       images: crop.images || []

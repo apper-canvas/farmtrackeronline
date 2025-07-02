@@ -5,8 +5,8 @@ import Button from '@/components/atoms/Button'
 import Badge from '@/components/atoms/Badge'
 
 const TaskItem = ({ task, onToggleComplete, onEdit, onDelete }) => {
-  const isOverdue = new Date(task.dueDate) < new Date() && !task.completed
-  const isDueToday = format(new Date(task.dueDate), 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')
+const isOverdue = new Date(task.due_date) < new Date() && !task.completed
+  const isDueToday = format(new Date(task.due_date), 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')
   
   const getTaskIcon = (type) => {
     const iconMap = {
@@ -64,8 +64,8 @@ const TaskItem = ({ task, onToggleComplete, onEdit, onDelete }) => {
               <h4 className={`font-medium ${task.completed ? 'line-through text-gray-500' : 'text-gray-900'}`}>
                 {task.title}
               </h4>
-              <Badge variant={getPriorityColor()} size="sm">
-                {format(new Date(task.dueDate), 'MMM d')}
+<Badge variant={getPriorityColor()} size="sm">
+                {format(new Date(task.due_date), 'MMM d')}
               </Badge>
             </div>
             
@@ -75,13 +75,13 @@ const TaskItem = ({ task, onToggleComplete, onEdit, onDelete }) => {
             
             <div className="flex items-center space-x-4 text-xs text-gray-500">
               <span className="flex items-center">
-                <ApperIcon name="MapPin" className="mr-1" size={12} />
-                Farm: {task.farmName || 'Unknown'}
+<ApperIcon name="MapPin" className="mr-1" size={12} />
+                Farm: {task.farm_name || 'Unknown'}
               </span>
-              {task.cropType && (
+{task.crop_type && (
                 <span className="flex items-center">
                   <ApperIcon name="Wheat" className="mr-1" size={12} />
-                  {task.cropType}
+                  {task.crop_type}
                 </span>
               )}
             </div>

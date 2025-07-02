@@ -64,15 +64,15 @@ const Inventory = () => {
     setIsModalOpen(true)
   }
 
-  const handleEdit = (item) => {
+const handleEdit = (item) => {
     setEditingItem(item)
     setFormData({
-      name: item.name,
+      name: item.Name,
       category: item.category,
-      currentStock: item.currentStock.toString(),
-      reorderLevel: item.reorderLevel.toString(),
+      currentStock: item.current_stock.toString(),
+      reorderLevel: item.reorder_level.toString(),
       unit: item.unit,
-      costPerUnit: item.costPerUnit.toString(),
+      costPerUnit: item.cost_per_unit.toString(),
       supplier: item.supplier,
       description: item.description
     })
@@ -121,21 +121,21 @@ const Inventory = () => {
     }
   }
 
-  const filteredData = data
+const filteredData = data
     .filter(item => {
-      const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      const matchesSearch = item.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            item.supplier.toLowerCase().includes(searchTerm.toLowerCase())
       const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter
       return matchesSearch && matchesCategory
     })
-    .sort((a, b) => {
-      if (sortBy === 'name') return a.name.localeCompare(b.name)
-      if (sortBy === 'stock') return b.currentStock - a.currentStock
+.sort((a, b) => {
+      if (sortBy === 'name') return a.Name.localeCompare(b.Name)
+      if (sortBy === 'stock') return b.current_stock - a.current_stock
       if (sortBy === 'category') return a.category.localeCompare(b.category)
       return 0
     })
 
-  const lowStockItems = data.filter(item => item.currentStock <= item.reorderLevel)
+const lowStockItems = data.filter(item => item.current_stock <= item.reorder_level)
 
   if (loading) return <Loading />
   if (error) return <Error message={error} onRetry={loadInventory} />
@@ -167,10 +167,10 @@ const Inventory = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
             {lowStockItems.map(item => (
-              <div key={item.Id} className="text-sm">
-                <span className="font-medium">{item.name}</span>
+<div key={item.Id} className="text-sm">
+                <span className="font-medium">{item.Name}</span>
                 <span className="text-gray-600 ml-1">
-                  ({item.currentStock} {item.unit} remaining)
+                  ({item.current_stock} {item.unit} remaining)
                 </span>
               </div>
             ))}
@@ -259,7 +259,7 @@ const Inventory = () => {
                     />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 text-sm">{item.name}</h3>
+<h3 className="font-semibold text-gray-900 text-sm">{item.Name}</h3>
                     <p className="text-xs text-gray-500 capitalize">{item.category}</p>
                   </div>
                 </div>
@@ -284,25 +284,25 @@ const Inventory = () => {
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Current Stock</span>
+<span className="text-sm text-gray-600">Current Stock</span>
                   <span className={`font-semibold ${
-                    item.currentStock <= item.reorderLevel ? 'text-error' : 'text-gray-900'
+                    item.current_stock <= item.reorder_level ? 'text-error' : 'text-gray-900'
                   }`}>
-                    {item.currentStock} {item.unit}
+                    {item.current_stock} {item.unit}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Reorder Level</span>
-                  <span className="text-gray-900">{item.reorderLevel} {item.unit}</span>
+                  <span className="text-gray-900">{item.reorder_level} {item.unit}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Cost per Unit</span>
-                  <span className="text-gray-900">${item.costPerUnit.toFixed(2)}</span>
+                  <span className="text-gray-900">${item.cost_per_unit.toFixed(2)}</span>
                 </div>
                 <div className="pt-2 border-t border-gray-100">
                   <p className="text-xs text-gray-600">{item.supplier}</p>
                 </div>
-                {item.currentStock <= item.reorderLevel && (
+{item.current_stock <= item.reorder_level && (
                   <div className="flex items-center space-x-2 p-2 bg-error/10 rounded-lg">
                     <ApperIcon name="AlertTriangle" className="text-error" size={14} />
                     <span className="text-xs text-error font-medium">Reorder needed</span>

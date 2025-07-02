@@ -1,83 +1,226 @@
-import mockData from '@/services/mockData/inventory.json'
-
-// Generate unique ID
-let lastId = Math.max(...mockData.map(item => item.Id), 0)
-
-// Mock inventory data storage
-let inventoryData = [...mockData]
-
 const inventoryService = {
-  // Get all inventory items
-  getAll: () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve([...inventoryData])
-      }, 200)
-    })
+  async getAll() {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+      
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } },
+          { field: { Name: "category" } },
+          { field: { Name: "current_stock" } },
+          { field: { Name: "reorder_level" } },
+          { field: { Name: "unit" } },
+          { field: { Name: "cost_per_unit" } },
+          { field: { Name: "supplier" } },
+          { field: { Name: "description" } }
+        ]
+      };
+      
+      const response = await apperClient.fetchRecords('inventory', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+      
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching inventory:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      throw error;
+    }
   },
-
-  // Get inventory item by ID
-  getById: (id) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const item = inventoryData.find(item => item.Id === parseInt(id))
-        if (item) {
-          resolve({ ...item })
-        } else {
-          reject(new Error(`Inventory item with Id ${id} not found`))
-        }
-      }, 200)
-    })
+  
+  async getById(id) {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+      
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } },
+          { field: { Name: "category" } },
+          { field: { Name: "current_stock" } },
+          { field: { Name: "reorder_level" } },
+          { field: { Name: "unit" } },
+          { field: { Name: "cost_per_unit" } },
+          { field: { Name: "supplier" } },
+          { field: { Name: "description" } }
+        ]
+      };
+      
+      const response = await apperClient.getRecordById('inventory', parseInt(id), params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+      
+      return response.data;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error(`Error fetching inventory item with ID ${id}:`, error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      throw error;
+    }
   },
-
-  // Create new inventory item
-  create: (itemData) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const newItem = {
-          ...itemData,
-          Id: ++lastId
+  
+  async create(itemData) {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+      
+      const params = {
+        records: [{
+          Name: itemData.name,
+          Tags: itemData.tags || "",
+          category: itemData.category,
+          current_stock: parseInt(itemData.currentStock),
+          reorder_level: parseInt(itemData.reorderLevel),
+          unit: itemData.unit,
+          cost_per_unit: parseFloat(itemData.costPerUnit),
+          supplier: itemData.supplier,
+          description: itemData.description || ""
+        }]
+      };
+      
+      const response = await apperClient.createRecord('inventory', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+      
+      if (response.results) {
+        const successfulRecords = response.results.filter(result => result.success);
+        const failedRecords = response.results.filter(result => !result.success);
+        
+        if (failedRecords.length > 0) {
+          console.error(`Failed to create ${failedRecords.length} inventory items:${JSON.stringify(failedRecords)}`);
+          throw new Error('Failed to create inventory item');
         }
-        inventoryData.push(newItem)
-        resolve({ ...newItem })
-      }, 200)
-    })
+        
+        return successfulRecords[0]?.data;
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error creating inventory item:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      throw error;
+    }
   },
-
-  // Update inventory item
-  update: (id, itemData) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const index = inventoryData.findIndex(item => item.Id === parseInt(id))
-        if (index !== -1) {
-          const updatedItem = {
-            ...inventoryData[index],
-            ...itemData,
-            Id: parseInt(id) // Ensure ID doesn't change
-          }
-          inventoryData[index] = updatedItem
-          resolve({ ...updatedItem })
-        } else {
-          reject(new Error(`Inventory item with Id ${id} not found`))
+  
+  async update(id, itemData) {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+      
+      const params = {
+        records: [{
+          Id: parseInt(id),
+          Name: itemData.name,
+          Tags: itemData.tags || "",
+          category: itemData.category,
+          current_stock: parseInt(itemData.currentStock),
+          reorder_level: parseInt(itemData.reorderLevel),
+          unit: itemData.unit,
+          cost_per_unit: parseFloat(itemData.costPerUnit),
+          supplier: itemData.supplier,
+          description: itemData.description || ""
+        }]
+      };
+      
+      const response = await apperClient.updateRecord('inventory', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+      
+      if (response.results) {
+        const successfulUpdates = response.results.filter(result => result.success);
+        const failedUpdates = response.results.filter(result => !result.success);
+        
+        if (failedUpdates.length > 0) {
+          console.error(`Failed to update ${failedUpdates.length} inventory items:${JSON.stringify(failedUpdates)}`);
+          throw new Error('Failed to update inventory item');
         }
-      }, 200)
-    })
+        
+        return successfulUpdates[0]?.data;
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error updating inventory item:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      throw error;
+    }
   },
-
-  // Delete inventory item
-  delete: (id) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const index = inventoryData.findIndex(item => item.Id === parseInt(id))
-        if (index !== -1) {
-          const deletedItem = inventoryData.splice(index, 1)[0]
-          resolve({ ...deletedItem })
-        } else {
-          reject(new Error(`Inventory item with Id ${id} not found`))
+  
+  async delete(id) {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+      
+      const params = {
+        RecordIds: [parseInt(id)]
+      };
+      
+      const response = await apperClient.deleteRecord('inventory', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+      
+      if (response.results) {
+        const successfulDeletions = response.results.filter(result => result.success);
+        const failedDeletions = response.results.filter(result => !result.success);
+        
+        if (failedDeletions.length > 0) {
+          console.error(`Failed to delete ${failedDeletions.length} inventory items:${JSON.stringify(failedDeletions)}`);
+          throw new Error('Failed to delete inventory item');
         }
-      }, 200)
-    })
+        
+        return successfulDeletions.length > 0;
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error deleting inventory item:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      throw error;
+    }
   }
-}
+};
 
-export default inventoryService
+export default inventoryService;

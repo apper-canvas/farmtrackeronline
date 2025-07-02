@@ -15,7 +15,7 @@ const FarmCard = ({ farm, onEdit, onDelete, onSelect }) => {
             <ApperIcon name="MapPin" className="text-primary-600" size={24} />
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900 font-display">{farm.name}</h3>
+<h3 className="font-semibold text-gray-900 font-display">{farm.Name}</h3>
             <p className="text-sm text-gray-600">{farm.location}</p>
           </div>
         </div>
@@ -44,13 +44,13 @@ const FarmCard = ({ farm, onEdit, onDelete, onSelect }) => {
             {farm.size}
           </p>
           <p className="text-xs text-gray-600 uppercase tracking-wide">
-            {farm.sizeUnit}
+{farm.size_unit}
           </p>
         </div>
         
         <div className="text-center p-3 bg-gray-50 rounded-lg">
           <p className="text-2xl font-bold text-gray-900 font-display">
-            {farm.activeCrops || 0}
+{farm.active_crops || 0}
           </p>
           <p className="text-xs text-gray-600 uppercase tracking-wide">
             Active Crops
@@ -61,7 +61,7 @@ const FarmCard = ({ farm, onEdit, onDelete, onSelect }) => {
       <div className="mt-4 pt-4 border-t border-gray-200">
         <div className="flex items-center justify-between text-sm text-gray-600">
           <span>Created:</span>
-          <span>{new Date(farm.createdAt).toLocaleDateString()}</span>
+<span>{new Date(farm.created_at).toLocaleDateString()}</span>
         </div>
       </div>
     </motion.div>

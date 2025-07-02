@@ -177,7 +177,7 @@ const periodIncome = transactions
 const handleEdit = (transaction) => {
     setEditingTransaction(transaction)
     setFormData({
-      farmId: transaction.farmId,
+      farmId: transaction.farm_id,
       type: transaction.type,
       category: transaction.category,
       amount: transaction.amount.toString(),
@@ -216,14 +216,14 @@ const resetForm = () => {
 
   const exportToCSV = () => {
     try {
-      const csvData = filteredTransactions.map(transaction => {
-        const farm = farms.find(f => f.Id === transaction.farmId)
+const csvData = filteredTransactions.map(transaction => {
+        const farm = farms.find(f => f.Id === transaction.farm_id)
         return {
           Date: format(new Date(transaction.date), 'yyyy-MM-dd'),
           Type: transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1),
           Category: transaction.category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
           Amount: transaction.amount,
-          Farm: farm ? `${farm.name} - ${farm.location}` : 'All Farms',
+          Farm: farm ? `${farm.Name} - ${farm.location}` : 'All Farms',
           Description: transaction.description || ''
         }
       })
@@ -271,15 +271,15 @@ const resetForm = () => {
       doc.text(`Total Expenses: $${periodExpenses.toLocaleString()}`, 20, 50)
       doc.text(`Net Profit: $${periodProfit.toLocaleString()}`, 20, 60)
       
-      // Add transactions table
+// Add transactions table
       const tableData = filteredTransactions.map(transaction => {
-        const farm = farms.find(f => f.Id === transaction.farmId)
+        const farm = farms.find(f => f.Id === transaction.farm_id)
         return [
           format(new Date(transaction.date), 'dd/MM/yyyy'),
           transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1),
           transaction.category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
           `$${transaction.amount.toLocaleString()}`,
-          farm ? `${farm.name}` : 'All Farms',
+          farm ? `${farm.Name}` : 'All Farms',
           transaction.description || ''
         ]
       })

@@ -116,14 +116,14 @@ const Tasks = () => {
     }
   }
   
-  const handleEdit = (task) => {
+const handleEdit = (task) => {
     setEditingTask(task)
     setFormData({
-      farmId: task.farmId,
-      cropId: task.cropId || '',
+      farmId: task.farm_id,
+      cropId: task.crop_id || '',
       title: task.title,
       type: task.type,
-      dueDate: task.dueDate.split('T')[0],
+      dueDate: task.due_date.split('T')[0],
       notes: task.notes || ''
     })
     setShowForm(true)
@@ -318,7 +318,7 @@ const Tasks = () => {
                     onChange={(e) => setFormData({ ...formData, cropId: e.target.value })}
                   >
                     <option value="">No specific crop</option>
-                    {crops.filter(crop => crop.farmId === formData.farmId).map(crop => (
+{crops.filter(crop => crop.farm_id === formData.farmId).map(crop => (
                       <option key={crop.Id} value={crop.Id}>
                         {crop.type} - {crop.field}
                       </option>
